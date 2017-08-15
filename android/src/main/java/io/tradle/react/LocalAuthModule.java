@@ -6,6 +6,7 @@ import android.app.KeyguardManager;
 import android.content.Intent;
 import android.content.Context;
 
+import android.os.Bundle;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -13,13 +14,16 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.BaseActivityEventListener;
 import com.facebook.react.bridge.ReadableMap;
+import android.util.Log;
 
+import java.util.Set;
+//import java.util.concurrent.CountDownLatch;
 // source for main part from:
 // https://github.com/googlesamples/android-ConfirmCredential/blob/master/Application/src/main/java/com/example/android/confirmcredential/MainActivity.java
 
 public class LocalAuthModule extends ReactContextBaseJavaModule {
 
-  private static final int AUTH_REQUEST = 562385;
+  private static final int AUTH_REQUEST = 5623;
   private static final String E_ACTIVITY_DOES_NOT_EXIST = "E_ACTIVITY_DOES_NOT_EXIST";
   private static final String E_AUTH_CANCELLED = "LAErrorUserCancel";
   private static final String E_FAILED_TO_SHOW_AUTH = "E_FAILED_TO_SHOW_AUTH";
@@ -28,8 +32,25 @@ public class LocalAuthModule extends ReactContextBaseJavaModule {
   private final ReactApplicationContext reactContext;
   private KeyguardManager mKeyguardManager;
   private Promise authPromise;
+  private boolean initialized = false;
 
   private final ActivityEventListener mActivityEventListener = new BaseActivityEventListener() {
+    @Override
+    public void onNewIntent(Intent intent) {
+      if (!initialized) {
+        Log.i("ReactNative", intent.toString());
+        Bundle bundle = intent.getExtras();
+        if (bundle != null) {
+          Set<String> keys = bundle.keySet();
+
+          StringBuilder stringBuilder = new StringBuilder();
+          for (String key : keys) {
+            stringBuilder.append(key).append("=").append(bundle.get(key)).append("\n\r");
+            initialized = stringBuilder.toString().contains("screen=Root");
+          }
+        }
+      }
+    }
     @Override
     public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
       if (requestCode != AUTH_REQUEST || authPromise == null) return;
@@ -62,18 +83,20 @@ public class LocalAuthModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void isInitialized(final Promise promise) { promise.resolve(initialized);}
+
+  @ReactMethod
   public void authenticate(ReadableMap map, final Promise promise) {
     // Create the Confirm Credentials screen. You can customize the title and description. Or
     // we will provide a generic one for you if you leave it null
-    Activity currentActivity = getCurrentActivity();
 
-    if (authPromise != null) {
-      promise.reject(E_ONE_REQ_AT_A_TIME, "Activity doesn't exist");
+    if (getCurrentActivity() == null) {
+      promise.reject(E_ACTIVITY_DOES_NOT_EXIST, "One auth request at a time");
       return;
     }
 
-    if (currentActivity == null) {
-      promise.reject(E_ACTIVITY_DOES_NOT_EXIST, "One auth request at a time");
+    if (authPromise != null) {
+      promise.reject(E_ONE_REQ_AT_A_TIME, "Activity doesn't exist");
       return;
     }
 
@@ -84,7 +107,7 @@ public class LocalAuthModule extends ReactContextBaseJavaModule {
     String description = map.hasKey("description") ? map.getString("description") : null;
     try {
       final Intent authIntent = mKeyguardManager.createConfirmDeviceCredentialIntent(reason, description);
-      currentActivity.startActivityForResult(authIntent, AUTH_REQUEST);
+      getCurrentActivity().startActivityForResult(authIntent, AUTH_REQUEST);
     } catch (Exception e) {
       authPromise.reject(E_FAILED_TO_SHOW_AUTH, e);
       authPromise = null;
