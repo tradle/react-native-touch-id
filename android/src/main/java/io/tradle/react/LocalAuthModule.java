@@ -14,7 +14,6 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.BaseActivityEventListener;
 import com.facebook.react.bridge.ReadableMap;
-import android.util.Log;
 
 import java.util.Set;
 //import java.util.concurrent.CountDownLatch;
@@ -38,7 +37,6 @@ public class LocalAuthModule extends ReactContextBaseJavaModule {
     @Override
     public void onNewIntent(Intent intent) {
       if (!initialized) {
-        Log.i("ReactNative", intent.toString());
         Bundle bundle = intent.getExtras();
         if (bundle != null) {
           Set<String> keys = bundle.keySet();
