@@ -51,7 +51,7 @@ var YourComponent = React.createClass({
   _pressHandler() {
     LocalAuth.authenticate({
         reason: 'this is a secure area, please authenticate yourself',
-        falbackToPasscode: true,    // fallback to passcode on cancel
+        fallbackToPasscode: true,    // fallback to passcode on cancel
         suppressEnterPassword: true // disallow Enter Password fallback
       })
       .then(success => {
