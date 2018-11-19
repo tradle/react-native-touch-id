@@ -1,5 +1,5 @@
 
-package io.tradle.react;
+package io.tradle.reactlocalauth;
 
 import java.util.Arrays;
 import java.util.Collections;

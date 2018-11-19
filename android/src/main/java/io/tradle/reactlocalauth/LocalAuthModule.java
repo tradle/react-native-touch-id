@@ -1,5 +1,5 @@
 
-package io.tradle.react;
+package io.tradle.reactlocalauth;
 
 import android.app.Activity;
 import android.app.KeyguardManager;
