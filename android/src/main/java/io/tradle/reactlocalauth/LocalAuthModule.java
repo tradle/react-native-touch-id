@@ -19,7 +19,7 @@ import com.facebook.react.bridge.ReadableMap;
 
 public class LocalAuthModule extends ReactContextBaseJavaModule {
 
-  private static final int AUTH_REQUEST = 562385;
+  private static final int AUTH_REQUEST = 18864;
   private static final String E_ACTIVITY_DOES_NOT_EXIST = "E_ACTIVITY_DOES_NOT_EXIST";
   private static final String E_AUTH_CANCELLED = "LAErrorUserCancel";
   private static final String E_FAILED_TO_SHOW_AUTH = "E_FAILED_TO_SHOW_AUTH";
