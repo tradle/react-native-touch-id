@@ -17,7 +17,7 @@ If TouchID is supported and enrolled (in this gif, 1st touch fails, 2nd succeeds
 
 If TouchID is not supported or not enrolled, you can fallback to device passcode
 
-![fallback to passcode](gifs/fallback to passcode.gif)
+![fallback to passcode](gifs/fallback%20to%20passcode.gif)
 
 ## Install
 ```shell
